@@ -22,7 +22,7 @@ def redirectToLeader(server_address, message):
                 return e
         elif type=='delete':
             try:
-                response = requests.delete(server_address,
+                response = requests.get(server_address,
                                         json=message,
                                         timeout=1)
             except Exception as e:
@@ -38,6 +38,7 @@ def redirectToLeader(server_address, message):
         else:
             break
     # if type == "get":
+    print(response)
     return response.json()
     # else:
     #     return response
@@ -71,11 +72,14 @@ def invalid_input():
     print("Format: address: http://ip:port")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('get')
-    parser.add_argument('http://127.0.0.1:5000')
-    parser.add_argument('name')
-    parser.add_argument('jack')
+    #parser = argparse.ArgumentParser()
+    #parser.add_argument('--put')
+    #parser.add_argument('--http://127.0.0.1:5000')
+    #parser.add_argument('--name')
+    #parser.add_argument('--jack')
+    #parser.parse_args()
+    #print(len(sys.argv))
+
     if len(sys.argv) == 4:
         # addr, key
         # get
@@ -89,7 +93,7 @@ if __name__ == "__main__":
         else:
             invalid_input()
 
-    elif len(sys.argv) == 4:
+    elif len(sys.argv) == 5:
         # addr, key value
         # put
         action = sys.argv[1]

@@ -218,17 +218,18 @@ class Node():
                 time.sleep(delta)
 
     def handle_get(self, payload):
-        print("getting", payload)
+
         key = payload["key"]
         act = payload["act"]
         if act == 'get':
+            print("getting", payload)
             if key in self.DB:
                 payload["value"] = self.DB[key]
                 return payload
         elif act == 'del':
+            print('deleting',payload)
             if key in self.DB:
                 self.DB[key] = None
-                payload["value"] = None
                 return payload
         return None
 
