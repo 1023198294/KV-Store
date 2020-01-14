@@ -39,7 +39,6 @@ def value_put():
         reply["payload"] = payload
     return jsonify(reply)
 
-
 # we reply to vote request
 @app.route("/vote_req", methods=['POST'])
 def vote_req():
@@ -75,7 +74,7 @@ if __name__ == "__main__":
             for ip in f:
                 ip_list.append(ip.strip())
         my_ip = ip_list.pop(index)
-
+        print(' * this is server Number',index)
         http, host, port = my_ip.split(':')
         # initialize node with ip list and its own ip
         n = Node(ip_list, my_ip)

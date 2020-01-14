@@ -220,11 +220,17 @@ class Node():
     def handle_get(self, payload):
         print("getting", payload)
         key = payload["key"]
-        if key in self.DB:
-            payload["value"] = self.DB[key]
-            return payload
-        else:
-            return None
+        act = payload["act"]
+        if act == 'get':
+            if key in self.DB:
+                payload["value"] = self.DB[key]
+                return payload
+        elif act == 'del':
+            if key in self.DB:
+                self.DB[key] = None
+                payload["value"] = None
+                return payload
+        return None
 
     # takes a message and an array of confirmations and spreads it to the followers
     # if it is a comit it releases the lock
