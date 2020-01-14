@@ -22,7 +22,7 @@ def redirectToLeader(server_address, message):
                 return e
         elif type=='delete':
             try:
-                response = requests.get(server_address,
+                response = requests.put(server_address,
                                         json=message,
                                         timeout=1)
             except Exception as e:
@@ -37,17 +37,12 @@ def redirectToLeader(server_address, message):
                 break
         else:
             break
-    # if type == "get":
-    print(response)
     return response.json()
-    # else:
-    #     return response
-
 
 # client put request
 def put(addr, key, value):
     server_address = addr + "/request"
-    payload = {'key': key, 'value': value}
+    payload = {'key': key, 'value': value,'act':'put'}
     message = {"type": "put", "payload": payload}
     # redirecting till we find the leader, in case of request during election
     print(redirectToLeader(server_address, message))
@@ -72,14 +67,6 @@ def invalid_input():
     print("Format: address: http://ip:port")
 
 if __name__ == "__main__":
-    #parser = argparse.ArgumentParser()
-    #parser.add_argument('--put')
-    #parser.add_argument('--http://127.0.0.1:5000')
-    #parser.add_argument('--name')
-    #parser.add_argument('--jack')
-    #parser.parse_args()
-    #print(len(sys.argv))
-
     if len(sys.argv) == 4:
         # addr, key
         # get

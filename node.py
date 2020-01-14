@@ -2,7 +2,7 @@ import threading
 import time
 import utils
 from config import cfg
-
+from LRU import LRUCache
 FOLLOWER = 0
 CANDIDATE = 1
 LEADER = 2
@@ -23,6 +23,8 @@ class Node():
         self.commitIdx = 0
         self.timeout_thread = None
         self.init_timeout()
+        self.capacity = 3
+        self.cache = LRUCache(capacity=self.capacity)
 
     # increment only when we are candidate and receive positve vote
     # change status to LEADER and start heartbeat as soon as we reach majority
@@ -223,14 +225,20 @@ class Node():
         act = payload["act"]
         if act == 'get':
             print("getting", payload)
-            if key in self.DB:
+            cache_res = self.cache.get(key)
+            if cache_res is not None:
+                payload["value"] = cache_res
+                return payload
+            elif key in self.DB:
                 payload["value"] = self.DB[key]
                 return payload
+        '''
         elif act == 'del':
             print('deleting',payload)
             if key in self.DB:
                 self.DB[key] = None
                 return payload
+        '''
         return None
 
     # takes a message and an array of confirmations and spreads it to the followers
@@ -246,7 +254,6 @@ class Node():
 
     def handle_put(self, payload):
         print("putting", payload)
-
         # lock to only handle one request at a time
         self.lock.acquire()
         self.staged = payload
@@ -289,7 +296,15 @@ class Node():
         self.commitIdx += 1
         self.log.append(self.staged)
         key = self.staged["key"]
-        value = self.staged["value"]
-        self.DB[key] = value
+        act = self.staged["act"]
+        value = None
+        if act == 'put':
+            value = self.staged["value"]
+            self.DB[key] = value
+        elif act =='del':
+            self.DB[key] = None
+        # put newly inserted key-value pair into local cache
+        self.cache.set(key, value)
+        self.cache.getallkeys()
         # empty the staged so we can vote accordingly if there is a tie
         self.staged = None
