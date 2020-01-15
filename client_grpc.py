@@ -1,69 +1,9 @@
-import sys, requests
-import argparse
+import sys
 import grpc
 import mykvserver_pb2
 import mykvserver_pb2_grpc
-import time
 from debugger import debugger
-'''
-def redirectToLeader(server_address, message):
-    type = message["type"]
-    # looping until someone tells he is the leader
-    while True:
-        # switching between "get" and "put"
-        if type == "get":
-            try:
-                response = requests.get(server_address,
-                                        json=message,
-                                        timeout=1)
-            except Exception as e:
-                return e
-        elif type=='put':
-            try:
-                response = requests.put(server_address,
-                                        json=message,
-                                        timeout=1)
-            except Exception as e:
-                return e
-        elif type=='delete':
-            try:
-                response = requests.put(server_address,
-                                        json=message,
-                                        timeout=1)
-            except Exception as e:
-                return e
-        # if valid response and an address in the "message" section in reply
-        # redirect server_address to the potential leader
-        if response.status_code == 200 and "payload" in response.json():
-            payload = response.json()["payload"]
-            if "message" in payload:
-                server_address = payload["message"] + "/request"
-            else:
-                break
-        else:
-            break
-    return response.json()
-'''
-'''
-def put(addr, key, value):
-    server_address = addr + "/request"
-    payload = {'key': key, 'value': value,'act':'put'}
-    message = {"type": "put", "payload": payload}
-    # redirecting till we find the leader, in case of request during election
-    print(redirectToLeader(server_address, message))
-# client get request
-def get(addr, key):
-    server_address = addr + "/request"
-    payload = {'key': key,'act':'get'}
-    message = {"type": "get", "payload": payload}
-    # redirecting till we find the leader, in case of request during election
-    print(redirectToLeader(server_address, message))
-def DEL(addr,key):
-    server_address = addr+'/request'
-    payload = {'key':key,'act':'del'}
-    message = {'type':'delete','payload':payload}
-    print(redirectToLeader(server_address,message))
-'''
+
 def invalid_input():
     print("PUT usage: python client.py PUT address 'key' 'value'")
     print("GET usage: python client.py GET address 'key'")

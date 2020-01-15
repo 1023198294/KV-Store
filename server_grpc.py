@@ -1,73 +1,17 @@
 from node_grpc import Node
 from node_grpc import FOLLOWER, LEADER
-from flask import Flask, request, jsonify
 import sys
 import grpc
 from concurrent import futures
 import mykvserver_pb2
 import mykvserver_pb2_grpc
 import time
-from debugger import debugger
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 my_ip = None
 my_host = None
 my_port = None
 n = None
-'''
-app = Flask(__name__)
 
-
-# value_get is the flask handle
-@app.route("/request", methods=['GET'])
-def value_get():
-    payload = request.json["payload"]
-    reply = {"code": 'fail', 'payload': payload}
-    if n.status == LEADER:
-        # request handle, reply is a dictionary
-        result = n.handle_get(payload)
-        if result:
-            reply = {"code": "success", "payload": result}
-    elif n.status == FOLLOWER:
-        # redirect request
-        reply["payload"]["message"] = n.leader
-    return jsonify(reply)
-
-
-@app.route("/request", methods=['PUT'])
-def value_put():
-    payload = request.json["payload"]
-    reply = {"code": 'fail'}
-
-    if n.status == LEADER:
-        # request handle, reply is a dictionary
-        result = n.handle_put(payload)
-        if result:
-            reply = {"code": "success"}
-    elif n.status == FOLLOWER:
-        # redirect request
-        payload["message"] = n.leader
-        reply["payload"] = payload
-    return jsonify(reply)
-
-# we reply to vote request
-@app.route("/vote_req", methods=['POST'])
-def vote_req():
-    # also need to let me know whether up-to-date or not
-    term = request.json["term"]
-    commitIdx = request.json["commitIdx"]
-    staged = request.json["staged"]
-    choice, term = n.decide_vote(term, commitIdx, staged)
-    message = {"choice": choice, "term": term}
-    return jsonify(message)
-
-
-@app.route("/heartbeat", methods=['POST'])
-def heartbeat():
-    term, commitIdx = n.heartbeat_follower(request.json)
-    # return anyway, if nothing received by leader, we are dead
-    message = {"term": term, "commitIdx": commitIdx}
-    return jsonify(message)
-'''
 class KVServer(mykvserver_pb2_grpc.KVServerServicer):
     def Join(self, request, context):
         response = mykvserver_pb2.JoinResponse(ok=True)
@@ -164,16 +108,8 @@ class KVServer(mykvserver_pb2_grpc.KVServerServicer):
         msg = {
             'term':request.term,
             'addr':request.addr,
-            #'payload':{
-            #    'act':request.payload.act,
-            #    'key':request.payload.key,
-            #    'value':request.payload.value
-            #},
-            #'action':request.action,
-            #'commmitIdx':request.commitIdx
         }
         if request.payload:
-            #print ('payload is ',request.payload)
             msg['payload'] = {
              'act' : request.payload.act,
              'key' : request.payload.key,
@@ -183,7 +119,6 @@ class KVServer(mykvserver_pb2_grpc.KVServerServicer):
             msg['action'] = request.action
         if request.commitIdx:
             msg['commitIdx'] = request.commitIdx
-        #print ('msg is',msg)
         term,commitIdx = n.heartbeat_follower(msg)
         reply = mykvserver_pb2.HBReply()
         reply.term = term
@@ -195,9 +130,6 @@ class KVServer(mykvserver_pb2_grpc.KVServerServicer):
         pass
 
 
-# disable flask logging
-#log = logging.getLogger('werkzeug')
-#log.disabled = True
 def GRPCserver(ip_list,my_ip):
     global n
     n = Node(ip_list, my_ip)
@@ -225,10 +157,6 @@ if __name__ == "__main__":
                 ip_list.append(ip.strip())
         my_ip = ip_list.pop(index)
         print(' * this is server Number',index)
-        #my_host, my_port = my_ip.split(':')
-        # initialize node with ip list and its own ip
-        #n = Node(ip_list, my_ip)
-        #app.run(host="0.0.0.0", port=int(port), debug=False)
         GRPCserver(ip_list,my_ip)
     else:
         print("usage: python server.py <index> <ip_list_file>")

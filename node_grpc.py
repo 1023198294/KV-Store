@@ -80,14 +80,9 @@ class Node():
             message.staged.act = self.staged['act']
             message.staged.key = self.staged['key']
             message.staged.value = self.staged['value']
-        #message = {
-        #    "term": term,
-        #    "commitIdx": self.commitIdx,
-        #    "staged": self.staged
-        #}
-        #route = "vote_req"
+
         while self.status == CANDIDATE and self.term == term:
-            #reply = utils.send (voter, route, message)
+
             reply = stub.VoteRequest(message)
             if reply:
                 #choice = reply.json()["choice"]
@@ -138,14 +133,6 @@ class Node():
             t.start()
 
     def update_follower_commitIdx(self, follower):
-        #route = "heartbeat"
-        #first_message = {"term": self.term, "addr": self.addr}
-        #second_message = {
-        #    "term": self.term,
-        #    "addr": self.addr,
-        #    "action": "commit",
-        #    "payload": self.log[-1]
-        #}
         channel = grpc.insecure_channel(follower)
         stub = mykvserver_pb2_grpc.KVServerStub(channel)
         message = mykvserver_pb2.HBMessage()
@@ -157,10 +144,6 @@ class Node():
         message.commitIdx = self.commitIdx
         if self.log[-1]['value']:
             message.payload.value = self.log[-1]['value']
-        #reply = utils.send (follower, route, first_message)
-        #if reply and reply.json()["commitIdx"] < self.commitIdx:
-            # they are behind one commit, send follower the commit:
-            #reply = utils.send (follower, route, second_message)
         reply = stub.HeartBeat(message)
 
     def send_heartbeat(self, follower):
@@ -168,8 +151,6 @@ class Node():
         if self.log:
             self.update_follower_commitIdx(follower)
 
-        #route = "heartbeat"
-        #message = {"term": self.term, "addr": self.addr}
 
         while self.status == LEADER:
             start = time.time()
@@ -302,7 +283,7 @@ class Node():
     # if it is a comit it releases the lock
     def spread_update(self, message, confirmations=None, lock=None):
         for i, each in enumerate(self.fellow):
-            #r = utils.send (each, "heartbeat", message)
+
             channel = grpc.insecure_channel(each)
             stub = mykvserver_pb2_grpc.KVServerStub(channel)
             m = mykvserver_pb2.HBMessage()
