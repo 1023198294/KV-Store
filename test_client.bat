@@ -1,0 +1,1 @@
+start python -i client_grpc.py put 127.0.0.1:5000 name 田所浩二

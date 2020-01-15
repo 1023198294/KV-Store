@@ -1,0 +1,141 @@
+syntax = "proto3";
+service KVServer{
+	rpc Join(JoinRequest) returns (JoinResponse) {}
+	rpc PutRequest(PutMessage) returns (PutReply) {}
+	rpc GetRequest(GetMessage) returns (GetReply) {}
+	rpc DelRequest(DelMessage) returns (DelReply) {}
+	rpc VoteRequest(VoteMessage) returns (VoteReply) {}
+	rpc HeartBeat(HBMessage) returns (HBReply) {}
+	rpc SpreadLog(LogMessage) returns (LogReply) {}
+	rpc SpreadCommit(CommitMessage) returns (CommitReply) {}
+	 
+}
+
+message PutMessage{
+	string type = 1;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+	}
+	 Payload payload = 2;
+}
+message PutReply{
+	 string code = 1;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+		 string message = 4;
+	}
+	 Payload payload = 2;
+
+}
+message GetMessage{
+	 string type = 1;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+	}
+	 Payload payload = 2;
+
+}
+message GetReply{
+	 string code = 1;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+		 string message = 4;
+	}
+	 Payload payload = 2;
+}
+message DelMessage{
+	 string type = 1;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+	}
+	 Payload payload = 2;
+}
+message DelReply{
+	 string code = 1;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+		 string message = 4;
+	}
+	 Payload payload = 2;
+}
+message VoteMessage{
+	int32 term = 1;
+ 	int32 commitIdx = 2;
+	message Staged{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+	}
+	 Staged staged = 3;
+}
+message VoteReply{
+	 bool choice = 1;
+	 int32 term = 2;
+}
+message HBMessage{
+	 int32 term = 1;
+	 string addr = 2;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+	}
+	 Payload payload = 3;
+	 string action = 4;
+	 int32 commitIdx = 5;
+}
+message HBReply{
+	 int32 term = 1;
+	 int32 commitIdx = 2;
+}
+message LogMessage{
+	 int32 term = 1;
+	 string addr = 2;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+	}
+	 Payload staged = 3;
+	 string action = 4;
+	 int32 commitIdx = 5;
+
+}
+message LogReply{
+	 int32 term = 1;
+	 int32 commitIdx = 2;
+}
+message CommitMessage{
+	 int32 term = 1;
+	 string addr = 2;
+	message Payload{
+		 string act = 1;
+		 string key = 2;
+		 string value = 3;
+	}
+	 Payload staged = 3;
+	 string action = 4;
+}
+message CommitReply{
+	 int32 term = 1;
+	 int32 commitIdx = 2;
+}
+
+message JoinRequest {
+}
+
+message JoinResponse {
+  bool ok = 1;
+}

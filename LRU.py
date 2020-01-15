@@ -18,8 +18,10 @@ class LRUCache:
         if key in self.mapping:
             oldNode = self.mapping[key]
             if value is None:
+                self.mapping.pop(key)
                 self.remove(oldNode)
-                return
+                #self.getallkeys()
+                #print('erase key', key)
             else:
                 oldNode.value = value
                 self.remove(oldNode)
