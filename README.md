@@ -74,7 +74,7 @@ address = ip:port
 * python >= 3.4
   * grpcio==1.24.1
   * Flask==1.0.2
-  * requests==2.18.4
+  * requests==2.20.0
   * grpc==0.3-19
   * protobuf==3.11.2 
 
